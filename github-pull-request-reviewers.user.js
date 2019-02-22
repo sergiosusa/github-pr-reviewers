@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         Github Pull Request Reviewers
 // @namespace    https://sergiosusa.com/
-// @version      0.2
+// @version      0.3
 // @description  Copy, paste and clear Github pull request reviewers.
 // @author       You
 // @match        https://github.com/*/pull/*
+// @match        https://github.com/*/compare/*
 // @grant        none
 // ==/UserScript==
 
@@ -22,7 +23,7 @@ function GraphicInterface(pullRequestReviewers) {
 
     this.render = () => {
 
-        let container = document.querySelector("div.discussion-sidebar-item").parentNode.parentNode;
+        let container = document.querySelector("div.discussion-sidebar");
         container.innerHTML = this.html() + container.innerHTML;
 
         let copyBtn = document.getElementById('copy_btn');
@@ -42,7 +43,7 @@ function GraphicInterface(pullRequestReviewers) {
     };
 
     this.html = () => {
-        let html = '<div style="border-bottom: 1px solid #e6ebf1;margin-bottom: -11px;text-align: center;padding-bottom: 6px;" class="discussion-sidebar-item sidebar-assignee js-discussion-sidebar-item">';
+        let html = '<div id="pr-reviewers" style="border-bottom: 1px solid #e6ebf1;margin-bottom: -11px;text-align: center;padding-bottom: 6px;" class="discussion-sidebar-item sidebar-assignee js-discussion-sidebar-item">';
 
         html += '<div id="selectedReviewers" style="margin-bottom: 5px;">';
         html += this.reviewersHtml();
@@ -78,7 +79,7 @@ function PullRequestReviewers() {
 
         return new Promise(((resolve) => {
 
-            document.querySelectorAll("div.sidebar-assignee > form > details")[0].setAttribute('open', '');
+            this.getReviewersButton().setAttribute('open', '');
 
             setTimeout((() => {
 
@@ -95,17 +96,17 @@ function PullRequestReviewers() {
 
             }).bind(this), 1000);
 
-            setTimeout(() => {
-                document.querySelectorAll("div.sidebar-assignee > form > details")[0].removeAttribute('open');
+            setTimeout((() => {
+                this.getReviewersButton().removeAttribute('open');
                 resolve();
-            }, 2000);
+            }).bind(this), 2000);
 
         }).bind(this));
     };
 
     this.paste = () => {
 
-        document.querySelectorAll("div.sidebar-assignee > form > details")[0].setAttribute('open', '');
+        this.getReviewersButton().setAttribute('open', '');
 
         setTimeout((() => {
 
@@ -121,14 +122,15 @@ function PullRequestReviewers() {
 
         }).bind(this), 1000);
 
-        setTimeout(() => {
-            document.querySelectorAll("div.sidebar-assignee > form > details")[0].removeAttribute('open');
-        }, 2000);
+        setTimeout((() => {
+            this.getReviewersButton().removeAttribute('open');
+        }).bind(this), 2000);
 
     };
 
     this.clear = () => {
-        document.querySelectorAll("div.sidebar-assignee > form > details")[0].setAttribute('open', '');
+
+        this.getReviewersButton().setAttribute('open', '');
 
         setTimeout(() => {
 
@@ -141,9 +143,9 @@ function PullRequestReviewers() {
             }
         }, 1000);
 
-        setTimeout(() => {
-            document.querySelectorAll("div.sidebar-assignee > form > details")[0].removeAttribute('open');
-        }, 2000);
+        setTimeout((() => {
+            this.getReviewersButton().removeAttribute('open');
+        }).bind(this), 2000);
     };
 
     this.saveReviewers = (reviewersId) => {
@@ -152,5 +154,17 @@ function PullRequestReviewers() {
 
     this.getReviewers = () => {
         return JSON.parse(localStorage.getItem('github_reviewers'));
-    }
+    };
+
+    this.getReviewersButton = () => {
+        let reviewersButton = document.querySelectorAll("div.sidebar-assignee > form > details");
+
+        if (0 === reviewersButton.length) {
+            reviewersButton = document.querySelectorAll("div.sidebar-assignee > div > details");
+        }
+
+        return reviewersButton[0];
+
+    };
+
 }
