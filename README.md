@@ -4,8 +4,9 @@ This script adds to a pull request page a bar with two new features:
 
 - Copy and paste reviewers between pull request.
 - Clear reviewers from pull request.
+- Add the PR opener as a PR responsible.
 
-![Github Pull Request Reviewers Tool](https://s2.gifyu.com/images/demo99e9ed4a1b0c3030.gif)
+![Github Pull Request Reviewers](https://i.ibb.co/v1mh2Rt/github-pull-request-reviewers.png)
 
 ## Prerequisites
 
