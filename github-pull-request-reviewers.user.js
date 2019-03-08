@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Github Pull Request Reviewers
 // @namespace    https://sergiosusa.com/
-// @version      0.3
+// @version      0.4
 // @description  Copy, paste and clear Github pull request reviewers.
 // @author       You
 // @match        https://github.com/*/pull/*
@@ -11,10 +11,8 @@
 
 (function () {
     'use strict';
-
     let graphicInterface = new GraphicInterface(new PullRequestReviewers());
     graphicInterface.render();
-
 })();
 
 function GraphicInterface(pullRequestReviewers) {
@@ -22,18 +20,20 @@ function GraphicInterface(pullRequestReviewers) {
     this.pullRequestReviewers = pullRequestReviewers;
 
     this.render = () => {
-
         let container = document.querySelector("div.discussion-sidebar");
         container.innerHTML = this.html() + container.innerHTML;
 
-        let copyBtn = document.getElementById('copy_btn');
-        copyBtn.onclick = this.copyAndRender;
-        let pasteBtn = document.getElementById('paste_btn');
-        pasteBtn.onclick = this.pullRequestReviewers.paste;
+        let copyButton = document.getElementById('copy_btn');
+        copyButton.onclick = this.copyAndRender;
 
-        let clearBtn = document.getElementById('clear_btn');
-        clearBtn.onclick = this.pullRequestReviewers.clear;
+        let pasteButton = document.getElementById('paste_btn');
+        pasteButton.onclick = this.pullRequestReviewers.paste;
 
+        let clearButton = document.getElementById('clear_btn');
+        clearButton.onclick = this.pullRequestReviewers.clear;
+
+        let assignAuthorButton = document.getElementById('assign_author_btn');
+        assignAuthorButton.onclick = this.pullRequestReviewers.assignMe;
     };
 
     this.copyAndRender = () => {
@@ -52,6 +52,7 @@ function GraphicInterface(pullRequestReviewers) {
         html += '<button type="button" id="copy_btn" class="btn btn-sm" >Copy</button> ' +
             '<button type="button" id="paste_btn" class="btn btn-sm" >Paste</button> ' +
             '<button type="button" id="clear_btn" class="btn btn-sm" >Clear</button>' +
+            '<button style="margin-top: 5px;" type="button" id="assign_author_btn" class="btn btn-sm" >Assign Author</button>' +
             '</div>';
 
         return html;
@@ -91,7 +92,6 @@ function PullRequestReviewers() {
                         reviewersId.push(reviewers[x].value);
                     }
                 }
-
                 this.saveReviewers(reviewersId)
 
             }).bind(this), 1000);
@@ -148,6 +148,33 @@ function PullRequestReviewers() {
         }).bind(this), 2000);
     };
 
+    this.assignMe = () => {
+
+        let myGithubId = this.getMyGithubId();
+        this.getAssigneesButton().setAttribute('open', '');
+
+        setTimeout(() => {
+
+            let assignees = document.querySelectorAll('input[name="issue[user_assignee_ids][]"]');
+
+            for (let x = 0; x < assignees.length; x++) {
+                if (myGithubId.includes(assignees[x].value) && !assignees[x].parentNode.getAttribute("class").includes("selected")) {
+                    assignees[x].click();
+                }
+            }
+        }, 1000);
+
+        setTimeout((() => {
+            this.getAssigneesButton().removeAttribute('open');
+        }).bind(this), 2000);
+    };
+
+    this.getMyGithubId = () => {
+        let regex = /\/hovercards\?user_id=(\d+)/i;
+        let url = document.querySelectorAll("a[data-hovercard-type=user]")[0].getAttribute('data-hovercard-url');
+        return url.match(regex)[1];
+    };
+
     this.saveReviewers = (reviewersId) => {
         localStorage.setItem('github_reviewers', JSON.stringify(reviewersId));
     };
@@ -157,14 +184,22 @@ function PullRequestReviewers() {
     };
 
     this.getReviewersButton = () => {
-        let reviewersButton = document.querySelectorAll("div.sidebar-assignee > form > details");
+        return this.getButtons()[0];
 
-        if (0 === reviewersButton.length) {
-            reviewersButton = document.querySelectorAll("div.sidebar-assignee > div > details");
+    };
+
+    this.getAssigneesButton = () => {
+        return this.getButtons()[1];
+    };
+
+    this.getButtons = () => {
+        let assigneesButton = document.querySelectorAll("div.sidebar-assignee > form > details");
+
+        if (0 === assigneesButton.length) {
+            assigneesButton = document.querySelectorAll("div.sidebar-assignee > div > details");
         }
 
-        return reviewersButton[0];
-
+        return assigneesButton;
     };
 
 }
