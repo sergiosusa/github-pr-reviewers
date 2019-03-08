@@ -23,17 +23,17 @@ function GraphicInterface(pullRequestReviewers) {
         let container = document.querySelector("div.discussion-sidebar");
         container.innerHTML = this.html() + container.innerHTML;
 
-        let copyBtn = document.getElementById('copy_btn');
-        copyBtn.onclick = this.copyAndRender;
+        let copyButton = document.getElementById('copy_btn');
+        copyButton.onclick = this.copyAndRender;
 
-        let pasteBtn = document.getElementById('paste_btn');
-        pasteBtn.onclick = this.pullRequestReviewers.paste;
+        let pasteButton = document.getElementById('paste_btn');
+        pasteButton.onclick = this.pullRequestReviewers.paste;
 
-        let clearBtn = document.getElementById('clear_btn');
-        clearBtn.onclick = this.pullRequestReviewers.clear;
+        let clearButton = document.getElementById('clear_btn');
+        clearButton.onclick = this.pullRequestReviewers.clear;
 
-        let assignMeBtn = document.getElementById('assign_me_btn');
-        assignMeBtn.onclick = this.pullRequestReviewers.assignMe;
+        let assignAuthorButton = document.getElementById('assign_author_btn');
+        assignAuthorButton.onclick = this.pullRequestReviewers.assignMe;
     };
 
     this.copyAndRender = () => {
@@ -52,7 +52,7 @@ function GraphicInterface(pullRequestReviewers) {
         html += '<button type="button" id="copy_btn" class="btn btn-sm" >Copy</button> ' +
             '<button type="button" id="paste_btn" class="btn btn-sm" >Paste</button> ' +
             '<button type="button" id="clear_btn" class="btn btn-sm" >Clear</button>' +
-            '<button style="margin-top: 5px;" type="button" id="assign_me_btn" class="btn btn-sm" >Assign Me</button>' +
+            '<button style="margin-top: 5px;" type="button" id="assign_author_btn" class="btn btn-sm" >Assign Author</button>' +
             '</div>';
 
         return html;
