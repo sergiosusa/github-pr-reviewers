@@ -27,7 +27,7 @@ That's it!
 
 ## Know bugs
 
-- Github do not reload page when enter to PR pages coming from a internal link, so, 'on ready' event never launch the script (reload page manually will fix it).
+- None. (Don't forget report bugs as an issue on the repository).
 
 ## Author
 

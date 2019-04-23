@@ -1,21 +1,22 @@
 // ==UserScript==
 // @name         Github Pull Request Reviewers
 // @namespace    https://sergiosusa.com/
-// @version      1.0.0
+// @version      1.0.1
 // @description  Copy, paste and clear Github pull request reviewers.
 // @author       You
-// @match        https://github.com/*/pull/*
-// @match        https://github.com/*/compare/*
+// @match        https://github.com/*
 // @grant        GM_setClipboard
 // ==/UserScript==
 
 (function () {
     'use strict';
+
     let graphicInterface = new GraphicInterface(
         new PullRequestReviewers()
     );
 
     graphicInterface.render();
+
 })();
 
 function GraphicInterface(pullRequestReviewers) {
@@ -23,8 +24,24 @@ function GraphicInterface(pullRequestReviewers) {
     this.pullRequestReviewers = pullRequestReviewers;
 
     this.render = () => {
-        this.injectHtml();
-        this.injectEventHandlers();
+
+        setInterval(
+            (() => {
+                if (this.haveToRender()) {
+                    this.injectHtml();
+                    this.injectEventHandlers();
+                }
+            }).bind(this),
+            2000
+        );
+    };
+
+    this.haveToRender = () => {
+        let isAValidPages = (/https:\/\/github.com\/.+\/(pull\/\d+$|compare\/.+)/g).test(window.location.href);
+        let isAlreadyLoad = null !== document.getElementById('prReviewersContainer');
+        let existReviewersContainer = null === document.querySelector("div.discussion-sidebar");
+
+        return isAValidPages && !isAlreadyLoad && !existReviewersContainer;
     };
 
     this.injectHtml = () => {
