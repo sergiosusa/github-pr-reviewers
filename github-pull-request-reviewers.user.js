@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Github Pull Request Reviewers
 // @namespace    https://sergiosusa.com/
-// @version      1.0.1
+// @version      1.0.2
 // @description  Copy, paste and clear Github pull request reviewers.
 // @author       You
 // @match        https://github.com/*
@@ -39,13 +39,13 @@ function GraphicInterface(pullRequestReviewers) {
     this.haveToRender = () => {
         let isAValidPages = (/https:\/\/github.com\/.+\/(pull\/\d+$|compare\/.+)/g).test(window.location.href);
         let isAlreadyLoad = null !== document.getElementById('prReviewersContainer');
-        let existReviewersContainer = null === document.querySelector("div.discussion-sidebar");
+        let existReviewersContainer = null === document.querySelector("div#partial-discussion-sidebar"); //document.querySelector("div.partial-discussion-sidebar");
 
         return isAValidPages && !isAlreadyLoad && !existReviewersContainer;
     };
 
     this.injectHtml = () => {
-        let container = document.querySelector("div.discussion-sidebar");
+        let container = document.querySelector("div#partial-discussion-sidebar");
         container.innerHTML = this.html() + container.innerHTML;
     };
 
@@ -219,13 +219,11 @@ function PullRequestReviewers() {
 
             setTimeout((() => {
 
-                let reviewers = document.querySelectorAll('input[name="reviewer_user_ids[]"]');
+                let reviewers = document.querySelectorAll('label[aria-checked="true"] > input[name="reviewer_user_ids[]"]');
                 let reviewersId = [];
 
                 for (let x = 0; x < reviewers.length; x++) {
-                    if (reviewers[x].parentNode.getAttribute("class").includes("selected")) {
-                        reviewersId.push(reviewers[x].value);
-                    }
+                    reviewersId.push(reviewers[x].value);
                 }
                 this.saveReviewers(reviewersId)
 
@@ -250,7 +248,7 @@ function PullRequestReviewers() {
             let reviewersId = this.getReviewers();
 
             for (let x = 0; x < reviewers.length; x++) {
-                if (reviewersId.includes(reviewers[x].value) && !reviewers[x].parentNode.getAttribute("class").includes("selected")) {
+                if (reviewersId.includes(reviewers[x].value) && !reviewers[x].parentNode.getAttribute("aria-checked").includes("true")) {
                     reviewers[x].click();
                 }
             }
